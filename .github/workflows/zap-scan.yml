@@ -13,37 +13,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descargar el código fuente desde el repositorio
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # 2. Configurar Node.js con pnpm
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16  # Versión de Node.js compatible con tu proyecto
+          node-version: 16
 
       - name: Install pnpm
         run: npm install -g pnpm
 
-      # 3. Instalar dependencias con pnpm
       - name: Install dependencies
         run: pnpm install
 
-      # 4. Construir y ejecutar el servidor local con pnpm
+      - name: Build the app
+        run: pnpm run build
+
       - name: Start local server
         run: |
           pnpm run dev &
-          sleep 15  # Espera para asegurar que el servidor esté disponible
+          sleep 15
 
-      # 5. Ejecutar OWASP ZAP sin instalación previa
       - name: Run OWASP ZAP scan
-        uses: zaproxy/action-full-scan@v1
+        uses: zaproxy/action-full-scan@v0.12.0
         with:
-          target: "http://localhost:3000"  # Cambia el puerto si usas uno diferente
+          target: "http://localhost:3000"
           fail_on_warn: true
 
-      # 6. Subir los resultados del análisis
       - name: Upload ZAP Report
         uses: actions/upload-artifact@v3
         with:
