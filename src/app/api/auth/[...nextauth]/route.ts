@@ -5,3 +5,4 @@ export const { signIn, signOut, auth } = NextAuth(authConfig);
 
 // Exporta explícitamente los métodos HTTP GET y POST
 //prueba de devsecops
+//tecera pruebas
