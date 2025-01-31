@@ -17,19 +17,20 @@ jobs:
       - name: 📥 Clonar el repositorio
         uses: actions/checkout@v4
 
-      # 2. Configurar Node.js con compatibilidad para PNPM
+      # 2. Configurar Node.js
       - name: ⚡ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'pnpm'
+          cache: 'npm'
 
-      # 3. Activar y verificar PNPM con Corepack
-      - name: 📦 Instalar y verificar PNPM
+      # 3. Instalar PNPM de manera manual
+      - name: 📦 Instalar PNPM
         run: |
-          corepack enable
-          corepack prepare pnpm@latest --activate
-          pnpm --version  # 🔹 Verifica si PNPM está disponible
+          npm install -g pnpm
+          echo "PNPM instalado en: $(which pnpm)"
+          echo "export PATH=$(npm root -g)/pnpm/bin:$PATH" >> $GITHUB_ENV
+          pnpm --version  # Verifica si PNPM está disponible
 
       # 4. Instalar dependencias con PNPM
       - name: 📦 Instalar dependencias
