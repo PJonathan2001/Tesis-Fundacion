@@ -3,7 +3,7 @@ name: Next.js CI/CD with Playwright
 on:
   push:
     branches:
-      - main  # Se ejecuta en cada push a la rama main
+      - main
   pull_request:
 
 jobs:
@@ -23,6 +23,16 @@ jobs:
       - name: 📦 Instalar PNPM
         run: corepack enable && corepack prepare pnpm@latest --activate
 
+      - name: 💾 Cache de dependencias y build
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pnpm-store
+            .next/cache
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
       - name: 📦 Instalar dependencias con PNPM
         run: pnpm install
 
@@ -30,13 +40,16 @@ jobs:
         run: pnpm run build
 
       - name: 🌍 Iniciar la aplicación en segundo plano
-        run: pnpm run dev &
-      
+        run: pnpm run start &
+
+      - name: ⏳ Esperar a que la aplicación esté lista
+        run: npx wait-on http://localhost:3000
+
       - name: 🎭 Instalar Playwright y navegadores
         run: pnpm exec playwright install --with-deps
 
       - name: 🧪 Ejecutar pruebas automáticas con Playwright
-        run: pnpm exec playwright test
+        run: pnpm exec playwright test --headless
 
       - name: 📂 Guardar reportes de pruebas
         uses: actions/upload-artifact@v3
