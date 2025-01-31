@@ -21,7 +21,7 @@ jobs:
           cache: 'pnpm'
 
       - name: 📦 Instalar PNPM
-        run: corepack enable && corepack prepare pnpm@latest --activate
+        run: npm install -g pnpm  # 🔹 Instalación explícita de PNPM
 
       - name: 💾 Cache de dependencias y build
         uses: actions/cache@v4
