@@ -17,18 +17,20 @@ jobs:
       - name: 📥 Clonar el repositorio
         uses: actions/checkout@v4
 
-      # 2. Configurar Node.js con una versión compatible
+      # 2. Configurar Node.js con PNPM correctamente
       - name: ⚡ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'pnpm'
 
-      # 3. Instalar pnpm globalmente
-      - name: 📦 Instalar pnpm
-        run: npm install -g pnpm
+      # 3. Instalar PNPM de manera oficial
+      - name: 📦 Instalar PNPM
+        uses: pnpm/action-setup@v3
+        with:
+          version: latest
 
-      # 4. Instalar dependencias con pnpm
+      # 4. Instalar dependencias con PNPM
       - name: 📦 Instalar dependencias
         run: pnpm install
 
