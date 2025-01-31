@@ -12,10 +12,10 @@ jobs:
 
     steps:
       - name: 📥 Clonar el repositorio
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: ⚡ Configurar Node.js y PNPM
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'pnpm'
@@ -24,7 +24,7 @@ jobs:
         run: corepack enable && corepack prepare pnpm@latest --activate
 
       - name: 💾 Cache de dependencias y build
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
@@ -52,7 +52,7 @@ jobs:
         run: pnpm exec playwright test --headless
 
       - name: 📂 Guardar reportes de pruebas
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: playwright-reports
           path: playwright-report/
