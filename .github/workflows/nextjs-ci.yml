@@ -1,0 +1,45 @@
+name: Next.js CI/CD with Playwright
+
+on:
+  push:
+    branches:
+      - main  # Se ejecuta en cada push a la rama main
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar el repositorio
+        uses: actions/checkout@v3
+
+      - name: ⚡ Configurar Node.js y PNPM
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: 📦 Instalar PNPM
+        run: corepack enable && corepack prepare pnpm@latest --activate
+
+      - name: 📦 Instalar dependencias con PNPM
+        run: pnpm install
+
+      - name: 🏗 Construir la aplicación Next.js
+        run: pnpm run build
+
+      - name: 🌍 Iniciar la aplicación en segundo plano
+        run: pnpm run dev &
+      
+      - name: 🎭 Instalar Playwright y navegadores
+        run: pnpm exec playwright install --with-deps
+
+      - name: 🧪 Ejecutar pruebas automáticas con Playwright
+        run: pnpm exec playwright test
+
+      - name: 📂 Guardar reportes de pruebas
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-reports
+          path: playwright-report/
