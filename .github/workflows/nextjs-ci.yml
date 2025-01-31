@@ -13,34 +13,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Descargar el código fuente desde el repositorio
+      # 1. Clonar el repositorio
       - name: 📥 Clonar el repositorio
         uses: actions/checkout@v4
 
-      # 2. Configurar Node.js
+      # 2. Configurar Node.js y PNPM
       - name: ⚡ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
+          cache: 'pnpm'
 
-      # 3. Instalar PNPM de manera manual
+      # 3. Instalar PNPM manualmente
       - name: 📦 Instalar PNPM
         run: |
           npm install -g pnpm
-          echo "PNPM instalado en: $(which pnpm)"
           echo "export PATH=$(npm root -g)/pnpm/bin:$PATH" >> $GITHUB_ENV
-          pnpm --version  # Verifica si PNPM está disponible
+          pnpm --version  # Verifica que PNPM esté instalado
 
-      # 4. Instalar dependencias con PNPM
+      # 4. Instalar dependencias sin exigir pnpm-lock.yaml
       - name: 📦 Instalar dependencias
-        run: pnpm install
+        run: pnpm install --no-frozen-lockfile
 
-      # 5. Construir la aplicación Next.js
+      # 5. Construir la aplicación
       - name: 🏗 Construir Next.js
         run: pnpm run build
 
-      # 6. Iniciar el servidor en segundo plano y esperar que esté disponible
+      # 6. Iniciar el servidor en segundo plano
       - name: 🌍 Iniciar servidor
         run: |
           pnpm run start &
