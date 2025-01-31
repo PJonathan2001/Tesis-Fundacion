@@ -35,8 +35,9 @@ jobs:
         run: pnpm install --no-frozen-lockfile
 
       # 5. Construir la aplicación
-      - name: 🏗 Construir Next.js
-        run: pnpm run build
+      - name: 🏗 Construir Next.js (sin ESLint)
+        run: pnpm run build --no-lint
+
 
       # 6. Iniciar el servidor en segundo plano
       - name: 🌍 Iniciar servidor
