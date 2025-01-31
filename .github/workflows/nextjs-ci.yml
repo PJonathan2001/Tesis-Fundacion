@@ -5,53 +5,53 @@ on:
     branches:
       - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Descargar el código fuente desde el repositorio
       - name: 📥 Clonar el repositorio
         uses: actions/checkout@v4
 
-      - name: ⚡ Configurar Node.js y PNPM
+      # 2. Configurar Node.js con una versión compatible
+      - name: ⚡ Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'pnpm'
 
-      - name: 📦 Instalar PNPM
-        run: npm install -g pnpm  # 🔹 Instalación explícita de PNPM
+      # 3. Instalar pnpm globalmente
+      - name: 📦 Instalar pnpm
+        run: npm install -g pnpm
 
-      - name: 💾 Cache de dependencias y build
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pnpm-store
-            .next/cache
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
-
-      - name: 📦 Instalar dependencias con PNPM
+      # 4. Instalar dependencias con pnpm
+      - name: 📦 Instalar dependencias
         run: pnpm install
 
-      - name: 🏗 Construir la aplicación Next.js
+      # 5. Construir la aplicación
+      - name: 🏗 Construir Next.js
         run: pnpm run build
 
-      - name: 🌍 Iniciar la aplicación en segundo plano
-        run: pnpm run start &
+      # 6. Iniciar el servidor en segundo plano y esperar que esté disponible
+      - name: 🌍 Iniciar servidor
+        run: |
+          pnpm run start &
+          sleep 15  # Espera para asegurar que el servidor esté disponible
 
-      - name: ⏳ Esperar a que la aplicación esté lista
-        run: npx wait-on http://localhost:3000
-
-      - name: 🎭 Instalar Playwright y navegadores
+      # 7. Instalar Playwright y navegadores
+      - name: 🎭 Instalar Playwright
         run: pnpm exec playwright install --with-deps
 
-      - name: 🧪 Ejecutar pruebas automáticas con Playwright
+      # 8. Ejecutar pruebas automáticas con Playwright
+      - name: 🧪 Ejecutar pruebas
         run: pnpm exec playwright test --headless
 
-      - name: 📂 Guardar reportes de pruebas
+      # 9. Subir reportes de pruebas
+      - name: 📂 Guardar reportes
         uses: actions/upload-artifact@v4
         with:
           name: playwright-reports
