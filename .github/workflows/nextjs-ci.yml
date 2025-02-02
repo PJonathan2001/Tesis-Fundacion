@@ -1,52 +1,68 @@
-name: Simulación de CI/CD con Tiempos Reales
+name: CI/CD para Frontend (Simulación)
 
 on:
   push:
     branches:
-      - main  # Se ejecuta cuando hay cambios en main
+      - main  # Se ejecuta cada vez que hay cambios en main
 
 jobs:
-  build:
+  gitleaks:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del código
         uses: actions/checkout@v3
       
-      - name: Instalar dependencias (Next.js)
+      - name: Simular escaneo de credenciales sensibles
         run: |
-          echo "Instalando dependencias..."
-          sleep 20  # Simula instalación (~20s)
-          echo "Instalación completada"
+          echo "Ejecutando gitleaks..."
+          sleep 10  # Simula revisión de 10 segundos
+          echo "No se encontraron credenciales expuestas."
 
-      - name: Compilar Next.js
-        run: |
-          echo "Compilando la aplicación Next.js..."
-          sleep 45  # Simula compilación (~45s)
-          echo "Compilación completada"
-
-  test:
+  testCalidadUnitaria:
     runs-on: ubuntu-latest
-    needs: build  # Se ejecuta después de "build"
+    needs: gitleaks  # Se ejecuta después de gitleaks
     steps:
-      - name: Simular pruebas funcionales con Selenium
+      - name: Checkout del código
+        uses: actions/checkout@v3
+      
+      - name: Instalar dependencias
         run: |
-          echo "Ejecutando pruebas de login con Selenium..."
-          sleep 35  # Simula tiempo real de prueba (~35s)
-          echo "Prueba de login completada"
+          echo "Instalando dependencias de Next.js..."
+          sleep 10  # Simula instalación
+          echo "Instalación completada."
 
-      - name: Simular pruebas de seguridad (SonarCloud, OWASP ZAP)
+      - name: Ejecutar pruebas unitarias
         run: |
-          echo "Ejecutando análisis de seguridad..."
-          sleep 40  # Simula tiempo de análisis (~40s)
-          echo "Análisis de seguridad completado"
+          echo "Ejecutando pruebas unitarias con Jest..."
+          sleep 30  # Simula pruebas (~30s)
+          echo "Todas las pruebas pasaron exitosamente."
+
+  SonarCloud:
+    runs-on: ubuntu-latest
+    needs: testCalidadUnitaria
+    steps:
+      - name: Simular análisis de calidad del código
+        run: |
+          echo "Analizando código con SonarCloud..."
+          sleep 45  # Simula análisis (~45s)
+          echo "Análisis de código completado."
+
+  escaneoSeguridad:
+    runs-on: ubuntu-latest
+    needs: SonarCloud
+    steps:
+      - name: Simular escaneo de seguridad con OWASP ZAP
+        run: |
+          echo "Ejecutando escaneo de seguridad..."
+          sleep 2m  # Simula análisis de seguridad (~2 minutos)
+          echo "No se encontraron vulnerabilidades críticas."
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test  # Se ejecuta después de "test", pero solo si todo pasó
-    if: success()  # Solo hace deploy si las pruebas pasan
+    needs: escaneoSeguridad
     steps:
-      - name: Simular despliegue
+      - name: Simular despliegue en Vercel
         run: |
-          echo "Desplegando aplicación..."
-          sleep 50  # Simula tiempo de despliegue (~50s)
-          echo "Despliegue exitoso"
+          echo "Desplegando en Vercel..."
+          sleep 33  # Simula despliegue (~33s)
+          echo "Despliegue exitoso en Vercel."
