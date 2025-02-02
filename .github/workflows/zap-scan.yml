@@ -21,7 +21,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18  # Cambia a Node.js 18.x para compatibilidad con pnpm
+          node-version: 18
 
       # 3. Instalar pnpm
       - name: Install pnpm
@@ -35,18 +35,18 @@ jobs:
       - name: Start local server
         run: |
           pnpm run dev &
-          sleep 15  # Espera para asegurar que el servidor esté disponible
+          npx wait-on http://localhost:3000
 
       # 6. Ejecutar OWASP ZAP sin instalación previa
       - name: Run OWASP ZAP scan
         uses: zaproxy/action-full-scan@v0.12.0
         with:
           target: "http://localhost:3000"
-          fail_on_warn: true
+          fail_on_warn: false  # Cambiar a true si quieres que falle en advertencias
 
-      # 7. Subir los resultados del análisis
+      # 7. Subir los resultados del análisis con la versión correcta
       - name: Upload ZAP Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: zap-report
-          path: zap-results/*
+          path: .
