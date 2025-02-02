@@ -1,42 +1,43 @@
-name: Build React App
+name: SonarCloud Analysis
 
 on:
   push:
     branches:
       - main
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches:
+      - main
 
 jobs:
-  sonarqube:
-    name: SonarQube
-    runs-on: ubuntu-latest  # Mantiene Ubuntu para compatibilidad con pnpm
+  sonar-analysis:
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout del código
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Necesario para análisis completo en SonarQube
+      # 1. Descargar el código fuente desde el repositorio
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Configurar Node.js y habilitar pnpm
+      # 2. Configurar Node.js con una versión compatible
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Ajusta la versión si es necesario
+          node-version: 18
           cache: 'pnpm'
 
-      - name: Habilitar pnpm con Corepack
-        run: corepack enable  # Asegura que pnpm esté disponible
+      # 3. Instalar pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      - name: Verificar instalación de pnpm
-        run: pnpm --version  # Confirma que pnpm se instaló correctamente
+      # 4. Instalar dependencias con pnpm
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
 
-      - name: Instalar dependencias con pnpm
-        run: pnpm install --no-frozen-lockfile  # Evita errores de dependencias
-
-      - name: Construir la aplicación de React
+      # 5. Construir la aplicación de React
+      - name: Build React App
         run: pnpm run build
 
-      - name: Ejecutar análisis de SonarCloud
+      # 6. Ejecutar análisis de SonarCloud
+      - name: Run SonarCloud Analysis
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
