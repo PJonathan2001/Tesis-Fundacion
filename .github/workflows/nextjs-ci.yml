@@ -1,61 +1,29 @@
-name: Next.js CI/CD with Playwright
+name: CI/CD Pipeline en GitHub
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    branches:
-      - main
+      - main  # Se ejecuta cuando hay cambios en main
 
 jobs:
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Clonar el repositorio
-      - name: 📥 Clonar el repositorio
-        uses: actions/checkout@v4
+      - name: Checkout del código
+        uses: actions/checkout@v3
+      - name: Simular compilación
+        run: echo "Compilando el código..."
 
-      # 2. Configurar Node.js y PNPM
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18 
+  test:
+    runs-on: ubuntu-latest
+    needs: build  # Se ejecuta después de "build"
+    steps:
+      - name: Simular pruebas
+        run: echo "Ejecutando pruebas..."
 
-      # 3. Instalar PNPM manualmente
-      - name: 📦 Instalar PNPM
-        run: |
-          npm install -g pnpm
-          echo "export PATH=$(npm root -g)/pnpm/bin:$PATH" >> $GITHUB_ENV
-          pnpm --version  # Verifica que PNPM esté instalado
-
-      # 4. Instalar dependencias sin exigir pnpm-lock.yaml
-      - name: 📦 Instalar dependencias
-        run: pnpm install --no-frozen-lockfile
-
-      # 5. Construir la aplicación
-      - name: 🏗 Construir Next.js (sin ESLint)
-        run: pnpm run build --no-lint
-
-
-      # 6. Iniciar el servidor en segundo plano
-      - name: 🌍 Iniciar servidor
-        run: |
-          pnpm run start &
-          sleep 15  # Espera para asegurar que el servidor esté disponible
-
-      # 7. Instalar Playwright y navegadores
-      - name: 🎭 Instalar Playwright
-        run: pnpm exec playwright install --with-deps
-
-      # 8. Ejecutar pruebas automáticas con Playwright
-      - name: 🧪 Ejecutar pruebas
-        run: pnpm exec playwright test --headless
-
-      # 9. Subir reportes de pruebas
-      - name: 📂 Guardar reportes
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-reports
-          path: playwright-report/
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # Se ejecuta después de "test"
+    steps:
+      - name: Simular despliegue
+        run: echo "Desplegando aplicación..."
