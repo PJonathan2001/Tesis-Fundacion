@@ -15,28 +15,30 @@ jobs:
     steps:
       # 1. Descargar el código fuente desde el repositorio
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       # 2. Configurar Node.js con soporte para pnpm
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-  
-# 3. Instalar pnpm
+          cache: 'pnpm'
+
+      # 3. Instalar pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
       # 4. Instalar dependencias con pnpm
       - name: Install dependencies
         run: pnpm install
-     
 
-      # 6. Construir la aplicación de React
-      - name: Build React App
-        run: pnpm run build
+      # 5. Iniciar servidor de desarrollo en segundo plano
+      - name: Start Next.js Dev Server
+        run: |
+          pnpm run dev &  # Ejecutar en segundo plano
+          sleep 5          # Esperar 5 segundos para que el servidor arranque
 
-      # 7. Ejecutar análisis de SonarCloud
+      # 6. Ejecutar análisis de SonarCloud
       - name: Run SonarCloud Analysis
         uses: SonarSource/sonarqube-scan-action@v4
         env:
