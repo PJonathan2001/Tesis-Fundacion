@@ -10,24 +10,28 @@ on:
 jobs:
   sonarqube:
     name: SonarQube
-    runs-on: ubuntu-latest  # Cambiado a Ubuntu porque React no necesita Windows
+    runs-on: ubuntu-latest  # Mantiene Ubuntu para compatibilidad con pnpm
 
     steps:
       - name: Checkout del código
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Necesario para un análisis completo en SonarQube
+          fetch-depth: 0  # Necesario para análisis completo en SonarQube
 
       - name: Configurar Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Usa la versión recomendada de Node.js para React
+          node-version: '18'  # Ajusta la versión si es necesario
+          cache: 'pnpm'
 
-      - name: Instalar dependencias
-        run: npm install
+      - name: Instalar pnpm
+        run: npm install -g pnpm
+
+      - name: Instalar dependencias con pnpm
+        run: pnpm install --no-frozen-lockfile  # Evita errores con dependencias
 
       - name: Construir la aplicación de React
-        run: npm run build
+        run: pnpm run build
 
       - name: Ejecutar análisis de SonarCloud
         uses: SonarSource/sonarqube-scan-action@v4
