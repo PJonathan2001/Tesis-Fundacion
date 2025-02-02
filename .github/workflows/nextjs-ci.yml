@@ -1,4 +1,4 @@
-name: CI/CD Pipeline con Tiempo de Ejecución
+name: CI/CD Pipeline en GitHub
 
 on:
   push:
@@ -6,25 +6,34 @@ on:
       - main  # Se ejecuta cuando hay cambios en main
 
 jobs:
-  login-test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout del código
         uses: actions/checkout@v3
-
-      - name: Instalar dependencias
+      
+      - name: Simular compilación
         run: |
-          echo "Instalando dependencias..."
-          time sleep 2  # Simula instalación de dependencias
+          echo "Compilando el código..."
+          sleep 40  # Simula que la compilación toma 40 segundos
+          echo "Compilación completada"
 
-      - name: Ejecutar prueba de login con Selenium
+  test:
+    runs-on: ubuntu-latest
+    needs: build  # Se ejecuta después de "build"
+    steps:
+      - name: Simular pruebas
         run: |
-          echo "Ejecutando prueba de login..."
-          START_TIME=$(date +%s)  # Guarda el tiempo de inicio
-          
-          # Aquí iría tu código de prueba con Selenium, por ejemplo:
-          python tests/test_login.py
-          
-          END_TIME=$(date +%s)  # Guarda el tiempo final
-          TOTAL_TIME=$((END_TIME - START_TIME))
-          echo "Tiempo total de la prueba de login: $TOTAL_TIME segundos"
+          echo "Ejecutando pruebas..."
+          sleep 40  # Simula que las pruebas tardan 40 segundos
+          echo "Pruebas completadas"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test  # Se ejecuta después de "test"
+    steps:
+      - name: Simular despliegue
+        run: |
+          echo "Desplegando aplicación..."
+          sleep 40  # Simula que el despliegue toma 40 segundos
+          echo "Despliegue exitoso"
