@@ -60,8 +60,8 @@ jobs:
       - name: Analizar código con SonarCloud
         run: |
           sonar-scanner \
-            -Dsonar.organization=PJonathan2001-Tesis-Fundacion \
-            -Dsonar.projectKey=Implementacion-DevSecOps \
+            -Dsonar.organization=Implementacion-DevSecOps \
+            -Dsonar.projectKey=PJonathan2001-Tesis-Fundacion \
             -Dsonar.sources=. \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
