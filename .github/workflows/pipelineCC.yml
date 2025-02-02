@@ -60,7 +60,7 @@ jobs:
       - name: Analizar código con SonarCloud
         run: |
           sonar-scanner \
-            -Dsonar.organization=Implementacion-DevSecOps \
+            -Dsonar.organization=implementacion-devsecops \
             -Dsonar.projectKey=Tesis-Fundacion \
             -Dsonar.branch.name=main \
             -Dsonar.sources=. \
