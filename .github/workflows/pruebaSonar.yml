@@ -15,26 +15,22 @@ jobs:
     steps:
       # 1. Descargar el código fuente desde el repositorio
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       # 2. Configurar Node.js con soporte para pnpm
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: 'pnpm'
+  
+# 3. Instalar pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
 
-      # 3. Habilitar pnpm (evita problemas de instalación)
-      - name: Enable pnpm
-        run: corepack enable
-
-      # 4. Verificar que pnpm está disponible
-      - name: Check pnpm version
-        run: pnpm --version
-
-      # 5. Instalar dependencias con pnpm
+      # 4. Instalar dependencias con pnpm
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
+     
 
       # 6. Construir la aplicación de React
       - name: Build React App
