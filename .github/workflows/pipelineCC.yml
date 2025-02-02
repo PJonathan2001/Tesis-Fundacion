@@ -76,9 +76,8 @@ jobs:
 
       - name: Iniciar servidor local de Next.js
         run: |
-          pnpm run build  # Construye Next.js antes de iniciar el servidor
-          pnpm run start &  # Ejecutar en segundo plano
-          npx wait-on http://localhost:3000  # Esperar hasta que el servidor esté listo
+          pnpm run dev &
+          npx wait-on http://localhost:3000
 
       - name: Ejecutar escaneo de seguridad con OWASP ZAP
         uses: zaproxy/action-full-scan@v0.12.0
