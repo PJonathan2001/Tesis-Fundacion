@@ -50,14 +50,17 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v3
 
-      - name: Configurar SonarCloud
+      - name: Instalar SonarScanner
         run: |
-          echo "Configurando SonarCloud..."
+          curl -sSLo sonarscanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip sonarscanner.zip
+          sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
+          echo "/opt/sonar-scanner/bin" >> $GITHUB_PATH
 
       - name: Analizar código con SonarCloud
         run: |
           sonar-scanner \
-            -Dsonar.PJonathan2001-Tesis-Fundacion\
+            -Dsonar.organization=PJonathan2001-Tesis-Fundacion \
             -Dsonar.projectKey=Implementacion-DevSecOps \
             -Dsonar.sources=. \
             -Dsonar.host.url=https://sonarcloud.io \
@@ -83,14 +86,15 @@ jobs:
 
       - name: Iniciar servidor local de Next.js
         run: |
-          pnpm run dev &  # Ejecutar en segundo plano
+          pnpm run build  # Construye Next.js antes de iniciar el servidor
+          pnpm run start &  # Ejecutar en segundo plano
           npx wait-on http://localhost:3000  # Esperar hasta que el servidor esté listo
 
       - name: Ejecutar escaneo de seguridad con OWASP ZAP
         uses: zaproxy/action-full-scan@v0.12.0
         with:
           target: "http://localhost:3000"
-          fail_on_warn: false  # Cambiar a true si quieres que falle en advertencias
+          fail_on_warn: true  # Cambia a false si no quieres que falle en advertencias
 
       - name: Subir reporte de OWASP ZAP
         uses: actions/upload-artifact@v4
@@ -98,9 +102,29 @@ jobs:
           name: zap-report
           path: .
 
-  deploy:
+  lighthouse:
     runs-on: ubuntu-latest
     needs: escaneoSeguridad
+    steps:
+      - name: Instalar Lighthouse
+        run: npm install -g lighthouse
+
+      - name: Ejecutar análisis de rendimiento con Lighthouse
+        uses: treosh/lighthouse-ci-action@v9
+        with:
+          configPath: "./lighthouserc.json"
+          urls: "http://localhost:3000"
+          uploadArtifacts: true
+
+      - name: Subir reporte de Lighthouse
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: ./lighthouseci/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: lighthouse
     steps:
       - name: Simular despliegue en Vercel
         run: |
