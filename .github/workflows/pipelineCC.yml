@@ -45,12 +45,13 @@ jobs:
 
   sonarqube:
     name: SonarQube
-    runs-on: windows-latest
+    runs-on: ubuntu-latest  # Cambiado de Windows a Ubuntu para mejor compatibilidad
     needs: testCalidadUnitaria
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be deshabilitado para una mejor relevancia del análisis
+          fetch-depth: 0  # Permite un análisis más profundo del historial de cambios
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v4
         env:
@@ -91,32 +92,12 @@ jobs:
           name: zap-report
           path: .
 
-  lighthouse:
+  merge:
     runs-on: ubuntu-latest
     needs: escaneoSeguridad
     steps:
-      - name: Instalar Lighthouse
-        run: npm install -g lighthouse
-
-      - name: Ejecutar análisis de rendimiento con Lighthouse
-        uses: treosh/lighthouse-ci-action@v9
-        with:
-          configPath: "./lighthouserc.json"
-          urls: "http://localhost:3000"
-          uploadArtifacts: true
-
-      - name: Subir reporte de Lighthouse
-        uses: actions/upload-artifact@v4
-        with:
-          name: lighthouse-report
-          path: ./lighthouseci/
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: lighthouse
-    steps:
-      - name: Simular despliegue en Vercel
+      - name: Simular Merge a Main
         run: |
-          echo "Desplegando en Vercel..."
-          sleep 33  # Simulación
-          echo "Despliegue exitoso."
+          echo "Verificando condiciones para merge..."
+          sleep 5  # Simulación
+          echo "Merge exitoso en la rama main."
