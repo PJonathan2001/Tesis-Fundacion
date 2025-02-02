@@ -17,7 +17,7 @@ jobs:
 
       - name: Instalar Gitleaks
         run: |
-          curl -sSL https://github.com/zricethezav/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
+          curl -sSL https://github.com/zricethez/gitleaks/releases/latest/download/gitleaks-linux-amd64 -o gitleaks
           chmod +x gitleaks
           sudo mv gitleaks /usr/local/bin/
 
@@ -43,33 +43,22 @@ jobs:
           sleep 30  # Simulación
           echo "Todas las pruebas pasaron exitosamente."
 
-  SonarCloud:
-    runs-on: ubuntu-latest
+  sonarqube:
+    name: SonarQube
+    runs-on: windows-latest
     needs: testCalidadUnitaria
     steps:
-      - name: Checkout del código
-        uses: actions/checkout@v3
-
-      - name: Instalar SonarScanner
-        run: |
-          curl -sSLo sonarscanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-          unzip sonarscanner.zip
-          sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
-          echo "/opt/sonar-scanner/bin" >> $GITHUB_PATH
-
-      - name: Analizar código con SonarCloud
-        run: |
-          sonar-scanner \
-            -Dsonar.organization=implementacion-devsecops \
-            -Dsonar.projectKey=Tesis-Fundacion \
-            -Dsonar.branch.name=main \
-            -Dsonar.sources=. \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be deshabilitado para una mejor relevancia del análisis
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   escaneoSeguridad:
     runs-on: ubuntu-latest
-    needs: SonarCloud
+    needs: sonarqube
     steps:
       - name: Checkout del código
         uses: actions/checkout@v3
