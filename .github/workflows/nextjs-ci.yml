@@ -1,4 +1,4 @@
-name: CI/CD Pipeline en GitHub
+name: Simulación de CI/CD con Tiempos Reales
 
 on:
   push:
@@ -12,28 +12,41 @@ jobs:
       - name: Checkout del código
         uses: actions/checkout@v3
       
-      - name: Simular compilación
+      - name: Instalar dependencias (Next.js)
         run: |
-          echo "Compilando el código..."
-          sleep 40  # Simula que la compilación toma 40 segundos
+          echo "Instalando dependencias..."
+          sleep 20  # Simula instalación (~20s)
+          echo "Instalación completada"
+
+      - name: Compilar Next.js
+        run: |
+          echo "Compilando la aplicación Next.js..."
+          sleep 45  # Simula compilación (~45s)
           echo "Compilación completada"
 
   test:
     runs-on: ubuntu-latest
     needs: build  # Se ejecuta después de "build"
     steps:
-      - name: Simular pruebas
+      - name: Simular pruebas funcionales con Selenium
         run: |
-          echo "Ejecutando pruebas..."
-          sleep 40  # Simula que las pruebas tardan 40 segundos
-          echo "Pruebas completadas"
+          echo "Ejecutando pruebas de login con Selenium..."
+          sleep 35  # Simula tiempo real de prueba (~35s)
+          echo "Prueba de login completada"
+
+      - name: Simular pruebas de seguridad (SonarCloud, OWASP ZAP)
+        run: |
+          echo "Ejecutando análisis de seguridad..."
+          sleep 40  # Simula tiempo de análisis (~40s)
+          echo "Análisis de seguridad completado"
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test  # Se ejecuta después de "test"
+    needs: test  # Se ejecuta después de "test", pero solo si todo pasó
+    if: success()  # Solo hace deploy si las pruebas pasan
     steps:
       - name: Simular despliegue
         run: |
           echo "Desplegando aplicación..."
-          sleep 40  # Simula que el despliegue toma 40 segundos
+          sleep 50  # Simula tiempo de despliegue (~50s)
           echo "Despliegue exitoso"
