@@ -18,17 +18,20 @@ jobs:
         with:
           fetch-depth: 0  # Necesario para análisis completo en SonarQube
 
-      - name: Configurar Node.js
+      - name: Configurar Node.js y habilitar pnpm
         uses: actions/setup-node@v3
         with:
           node-version: '18'  # Ajusta la versión si es necesario
           cache: 'pnpm'
 
-      - name: Instalar pnpm
-        run: npm install -g pnpm
+      - name: Habilitar pnpm con Corepack
+        run: corepack enable  # Asegura que pnpm esté disponible
+
+      - name: Verificar instalación de pnpm
+        run: pnpm --version  # Confirma que pnpm se instaló correctamente
 
       - name: Instalar dependencias con pnpm
-        run: pnpm install --no-frozen-lockfile  # Evita errores con dependencias
+        run: pnpm install --no-frozen-lockfile  # Evita errores de dependencias
 
       - name: Construir la aplicación de React
         run: pnpm run build
