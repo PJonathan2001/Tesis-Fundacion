@@ -62,6 +62,7 @@ jobs:
           sonar-scanner \
             -Dsonar.organization=Implementacion-DevSecOps \
             -Dsonar.projectKey=Tesis-Fundacion \
+            -Dsonar.branch.name=main \
             -Dsonar.sources=. \
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=${{ secrets.SONAR_TOKEN }}
